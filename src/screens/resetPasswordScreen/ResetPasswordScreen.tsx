@@ -1,39 +1,56 @@
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
+import { useDispatch } from 'react-redux';
 import InputField from '../../components/inputField/InputField';
 import Button from '../../components/customButton/CustomButton';
-
+import { resetPassword } from '../../store/slices/AuthSlice';
+import {  AppDispatch }  from '../../store/Store';
 const ResetPasswordScreen: React.FC = () => {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  const dispatch: AppDispatch = useDispatch();
+
+  const handleResetPassword = () => {
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    dispatch(resetPassword({ currentPassword, newPassword }))
+      .unwrap()
+      .then(() => {
+        Alert.alert('Success', 'Password updated successfully');
+      })
+      .catch((error) => {
+        Alert.alert('Error', error);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <InputField
-        label='Old Password'
-        placeholder="Enter Old password"
+        label="Current Password"
+        placeholder="Enter current password"
         secureTextEntry
-        onChangeText={(text) => console.log('Old Password:', text)}
+        onChangeText={setCurrentPassword}
       />
       <InputField
-        
-        label='New password'
+        label="New Password"
         placeholder="Enter new password"
         secureTextEntry
-        onChangeText={(text) => console.log('New Password:', text)}
+        onChangeText={setNewPassword}
       />
       <InputField
-        
-        label='Confirm new password'
-        placeholder="Confirm password"
+        label="Confirm New Password"
+        placeholder="Confirm new password"
         secureTextEntry
-        onChangeText={(text) => console.log('Confirm Password:', text)}
+        onChangeText={setConfirmPassword}
       />
       <View style={styles.button}>
-      <Button
-        title="Reset Password"
-        onPress={() => console.log('Password Reset')}
-        
-      />
+        <Button title="Reset Password" onPress={handleResetPassword} />
       </View>
-      
     </View>
   );
 };
@@ -41,17 +58,11 @@ const ResetPasswordScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
-    paddingTop:100,
     padding: 16,
     backgroundColor: '#fff',
   },
   button: {
-    alignSelf:'center',
-    margin:'auto',
-    position: 'absolute',
-    bottom:50,
-    width:'100%'
+    marginTop: 20,
   },
 });
 

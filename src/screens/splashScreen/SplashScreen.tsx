@@ -12,7 +12,7 @@ const SplashScreen = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('SignIn'); // Navigate to Home after 3 seconds
+      navigation.replace('SignUp'); // Navigate to Home after 3 seconds
     }, 3000);
 
     return () => clearTimeout(timer); // Clear timer on unmount
