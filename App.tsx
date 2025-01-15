@@ -1,16 +1,11 @@
-import React, { Component } from 'react'
-import { Text, View } from 'react-native'
-import SplashScreen from './src/screens/splashScreen/SplashScreen'
+import React from 'react';
+import MainNavigator from './src/navigation/MainNavigator';
 
-export class App extends Component {
-  render() {
-    return (
-      <View>
-        <Text> textInComponent </Text>
-        <SplashScreen/>
-      </View>
-    )
-  }
-}
+const App: React.FC = () => {
+  return (
+    <MainNavigator/>
+  );
+};
 
-export default App
+export default App;
+
