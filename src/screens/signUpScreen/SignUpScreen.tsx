@@ -1,35 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/Store';
-import { signUpUser } from '../../store/slices/AuthSlice';
-import { useAppDispatch } from '../../store/hook'; // Adjust the path
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store/Store';
+import {signUpUser} from '../../store/slices/AuthSlice';
+import {useAppDispatch} from '../../store/hook'; // Adjust the path
 import InputField from '../../components/inputField/InputField';
 import CustomButton from '../../components/customButton/CustomButton';
 import DividerComponent from '../../components/dividerComponent/DividerComponent';
 import ImageComponent from '../../components/ImageComponent/ImageComponent';
-
-const SignUpScreen: React.FC = ({ navigation }: any) => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+const SignUpScreen: React.FC = ({navigation}: any) => {
+  const [formData, setFormData] = useState({name: '', email: '', password: ''});
   const dispatch = useAppDispatch();
-  const { status, error } = useSelector((state: RootState) => state.user);
+  const {status, error} = useSelector((state: RootState) => state.user);
 
   const handleSignUp = () => {
-    const { name, email, password } = formData;
-
+    const {name, email, password} = formData;
     if (!name || !email || !password) {
       Alert.alert('Error', 'Please fill all the fields.');
       return;
     }
-
-    dispatch(signUpUser({ name, email, password }))
+    dispatch(signUpUser({name, email, password}))
       .unwrap()
       .then(() => {
         Alert.alert('Success', 'User account created and saved to database!');
-        setFormData({ name: '', email: '', password: '' });
+        setFormData({name: '', email: '', password: ''});
         navigation.navigate('SignIn');
       })
-      .catch((err) => {
+      .catch(err => {
         Alert.alert('Error', err);
       });
   };
@@ -41,24 +45,30 @@ const SignUpScreen: React.FC = ({ navigation }: any) => {
         label="Name"
         placeholder="Enter your name"
         value={formData.name}
-        onChangeText={(text) => setFormData({ ...formData, name: text })}
+        onChangeText={text => setFormData({...formData, name: text})}
       />
       <InputField
         label="Email"
         placeholder="Enter your email"
         value={formData.email}
-        onChangeText={(text) => setFormData({ ...formData, email: text })}
+        onChangeText={text => setFormData({...formData, email: text})}
         keyboardType="email-address"
       />
       <InputField
         label="Password"
         placeholder="Password"
         value={formData.password}
-        onChangeText={(text) => setFormData({ ...formData, password: text })}
+        onChangeText={text => setFormData({...formData, password: text})}
         secureTextEntry
       />
-      <CustomButton title="Sign Up" onPress={handleSignUp} disabled={status === 'loading'} />
-      {status === 'loading' && <ActivityIndicator size="large" color="#6F3DE9" />}
+      <CustomButton
+        title="Sign Up"
+        onPress={handleSignUp}
+        disabled={status === 'loading'}
+      />
+      {status === 'loading' && (
+        <ActivityIndicator size="large" color="#6F3DE9" />
+      )}
       {error && <Text style={styles.errorText}>{error}</Text>}
       <Text style={styles.linkText}>
         Already have an account?{' '}
