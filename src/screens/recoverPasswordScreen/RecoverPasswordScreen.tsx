@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, Alert } from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, Text, Alert} from 'react-native';
 import InputField from '../../components/inputField/InputField';
 import Button from '../../components/customButton/CustomButton';
-import auth from '@react-native-firebase/auth'; // Firebase Auth import
+import auth from '@react-native-firebase/auth';
 
 const RecoverPasswordScreen: React.FC = () => {
-  const [email, setEmail] = useState<string>(''); // State to hold the email input
+  const [email, setEmail] = useState<string>('');
 
   const handleRecoverPassword = async () => {
     if (email) {
@@ -30,12 +30,9 @@ const RecoverPasswordScreen: React.FC = () => {
         value={email}
         placeholder="Enter your email"
         keyboardType="email-address"
-        onChangeText={(text) => setEmail(text)} // Update email state
+        onChangeText={text => setEmail(text)}
       />
-      <Button
-        title="Send Reset Link"
-        onPress={handleRecoverPassword} // Attach the handler here
-      />
+      <Button title="Send Reset Link" onPress={handleRecoverPassword} />
     </View>
   );
 };
