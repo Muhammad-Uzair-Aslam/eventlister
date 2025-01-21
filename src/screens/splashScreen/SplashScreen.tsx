@@ -12,7 +12,7 @@ const SplashScreen = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('MyPosting'); // Navigate to EventDetail after 3 seconds
+      navigation.replace('ProfileSetting'); // Navigate to EventDetail after 3 seconds
     }, 3000);
 
     return () => clearTimeout(timer); // Clear timer on unmount

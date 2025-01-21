@@ -8,6 +8,9 @@ import ResetPassword from '../screens/resetPasswordScreen/ResetPasswordScreen';
 import Home from '../screens/homeScreen/HomeScreen';
 import MyPostingScreen from '../screens/myPostingScreen/MyPostingScreen';
 import EventDetailScreen from '../screens/eventDetailScreen/EventDetailScreen';
+import CreateEventScreen from '../screens/createEventScreen/CreateEventScreen';
+import TicketDetailScreen from '../screens/ticketDetailScreen/TicketDetailScreen';
+import ProfileSettingsScreen from '../screens/profileSetting/ProfileSetting';
 
 export type AuthStackParamList = {
   Splash: undefined;
@@ -17,6 +20,9 @@ export type AuthStackParamList = {
   ResetPassword: undefined;
   Home: undefined;
   MyPosting: undefined;
+  CreateEvent:undefined;
+  TicketDetail:undefined;
+  ProfileSetting:undefined
   EventDetail: {
     event: {
       title: string;
@@ -86,7 +92,24 @@ const AuthNavigator: React.FC = () => {
         component={EventDetailScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="CreateEvent"
+        component={CreateEventScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TicketDetail"
+        component={TicketDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProfileSetting"
+        component={ProfileSettingsScreen}
+        options={{ headerShown: false }}
+      />
+    
     </Stack.Navigator>
+    
   );
 };
 

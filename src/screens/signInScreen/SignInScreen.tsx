@@ -30,7 +30,7 @@ const SignInScreen: React.FC<Props> = ({ navigation }) => {
         Alert.alert('Success', `Welcome back, ${user.name}!`);
         setEmail('');
         setPassword('');
-        navigation.navigate('Home'); // Adjust navigation target as needed
+        navigation.navigate('CreateEvent'); // Adjust navigation target as needed
       })
       .catch((err) => {
         Alert.alert('Error', err);
