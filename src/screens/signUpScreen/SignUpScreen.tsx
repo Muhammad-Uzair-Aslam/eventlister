@@ -31,7 +31,7 @@ const SignUpScreen: React.FC = ({navigation}: any) => {
       .then(() => {
         Alert.alert('Success', 'User account created and saved to database!');
         setFormData({name: '', email: '', password: ''});
-        navigation.navigate('SignIn');
+        navigation.navigate('Home');
       })
       .catch(err => {
         Alert.alert('Error', err);
