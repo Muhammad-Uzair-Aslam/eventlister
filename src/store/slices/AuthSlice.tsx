@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'; // Firestore import
-
 interface AuthState {
   user: { name: string; email: string } | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -13,7 +12,19 @@ const initialState: AuthState = {
   status: 'idle',
   error: null,
 };
-
+export const signOutUser = createAsyncThunk<void, void>(
+  'user/signOut',
+  async (_, { rejectWithValue }) => {
+    try {
+      console.log('Attempting to sign out');
+      await auth().signOut(); // Firebase sign-out method
+      console.log('User signed out successfully');
+    } catch (error: any) {
+      console.error('Error during sign out:', error);
+      return rejectWithValue(error.message || 'Failed to sign out');
+    }
+  }
+);
 // Async Thunk for Signing Up
 export const signUpUser = createAsyncThunk<
   { name: string; email: string }, // Return type
@@ -137,6 +148,20 @@ const authSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(resetPassword.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(signOutUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(signOutUser.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.user = null; // Clear user data on successful logout
+      })
+      .addCase(signOutUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       });

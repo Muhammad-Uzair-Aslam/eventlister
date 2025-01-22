@@ -1,42 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { StackScreenProps } from '@react-navigation/stack';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
+// src/screens/signInScreen/SignInScreen.tsx
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import InputField from '../../components/inputField/InputField';
 import CustomButton from '../../components/customButton/CustomButton';
 import DividerComponent from '../../components/dividerComponent/DividerComponent';
 import ImageComponent from '../../components/ImageComponent/ImageComponent';
-import { signInUser } from '../../store/slices/AuthSlice';
-import { RootState, AppDispatch } from '../../store/Store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAuthForm } from '../../hooks/useSignin';
+import { SignInScreenProps } from '../../types/authTypes';
 
-type Props = StackScreenProps<AuthStackParamList, 'SignIn'>;
-
-const SignInScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const dispatch: AppDispatch = useDispatch();
-  const { status, error } = useSelector((state: RootState) => state.user);
-
-  const handleSignIn = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill all the fields.');
-      return;
-    }
-
-    dispatch(signInUser({ email, password }))
-      .unwrap()
-      .then((user) => {
-        Alert.alert('Success', `Welcome back, ${user.name}!`);
-        setEmail('');
-        setPassword('');
-        navigation.navigate('CreateEvent'); // Adjust navigation target as needed
-      })
-      .catch((err) => {
-        Alert.alert('Error', err);
-        // status:'failed'
-      });
-  };
+const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
+  const {
+    email,
+    password,
+    status,
+    error,
+    setEmail,
+    setPassword,
+    handleSignIn
+  } = useAuthForm(navigation);
 
   return (
     <View style={styles.container}>

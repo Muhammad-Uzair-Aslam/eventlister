@@ -1,19 +1,14 @@
 // src/screens/CreateEventScreen.tsx
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Image,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert} from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
-import * as ImagePicker from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { RootState, AppDispatch } from '../../store/store';
+import { createEvent } from '../../store/slices/EventSlice';
 import InputField from '../../components/inputField/InputField';
+import { Picker } from '@react-native-picker/picker';
 
-// Types
 export interface CreateEventState {
   eventName: string;
   ticketPrice: string;
@@ -34,35 +29,69 @@ const CreateEventScreen: React.FC = () => {
     googleMapsUrl: '',
     eventMedia: null,
   });
-  const [open, setOpen] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
-  // Helper function to ensure valid Date
-  const getValidDate = (date: Date | null): Date => date ?? new Date();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading } = useSelector((state: RootState) => state.event);
 
   const handleInputChange = (field: keyof CreateEventState, value: any) => {
     setFormState({ ...formState, [field]: value });
   };
 
-  const handleImageUpload = async () => {
-    const result = await ImagePicker.launchImageLibrary({
+  const selectPhoto = async () => {
+    const response = await launchImageLibrary({
       mediaType: 'photo',
+      quality: 1,
+      includeBase64: true,
     });
 
-    if (result.assets && result.assets.length > 0) {
-      handleInputChange('eventMedia', result.assets[0].uri);
+    if (response.assets && response.assets.length > 0) {
+      const imageBase64 = response.assets[0].base64;
+      if (imageBase64) {
+        const base64Url = `data:image/jpeg;base64,${imageBase64}`;
+        handleInputChange('eventMedia', base64Url);
+        Alert.alert('Success', 'Image selected successfully!');
+      } else {
+        Alert.alert('Error', 'No valid image data found.');
+      }
+    } else {
+      Alert.alert('Error', 'No image selected.');
     }
   };
 
-  const handlePublish = (): void => {
-    console.log('Form State:', formState);
+  const handlePublish = () => {
+    if (
+      !formState.eventName.trim() ||
+      !formState.ticketPrice.trim() ||
+      !formState.eventDate ||
+      !formState.eventType ||
+      !formState.eventLocation.trim() ||
+      !formState.googleMapsUrl.trim() ||
+      !formState.eventMedia
+    ) {
+      Alert.alert('Error', 'All fields are required. Please fill out all the details.');
+      return;
+    }
+  
+    dispatch(createEvent({ ...formState, eventDate: formState.eventDate.toISOString() }));
+    setFormState({
+      eventName: '',
+      ticketPrice: '',
+      eventDate: null,
+      eventType: '',
+      eventLocation: '',
+      googleMapsUrl: '',
+      eventMedia: null,
+    });
   };
+  
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Create an Event</Text>
 
-      {/* Event Name */}
       <InputField
         label="Event Name"
         placeholder="Enter event name"
@@ -70,7 +99,6 @@ const CreateEventScreen: React.FC = () => {
         onChangeText={(text) => handleInputChange('eventName', text)}
       />
 
-      {/* Ticket Price */}
       <InputField
         label="Ticket Price"
         placeholder="$0.00"
@@ -79,12 +107,11 @@ const CreateEventScreen: React.FC = () => {
         keyboardType="numeric"
       />
 
-      {/* Event Date */}
-      <View style={styles.datePickerContainer}>
+       <View style={styles.datePickerContainer}>
         <Text style={styles.label}>Event Date</Text>
         <TouchableOpacity
           style={styles.datePickerButton}
-          onPress={() => setShowDatePicker(true)}
+          onPress={() => setIsLoading(true)}
         >
           <Text style={styles.datePickerText}>
             {formState.eventDate
@@ -92,31 +119,34 @@ const CreateEventScreen: React.FC = () => {
               : 'Select Date'}
           </Text>
         </TouchableOpacity>
-        
-        {showDatePicker && (
-  <DatePicker
-    modal
-    open={showDatePicker}
-    date={getValidDate(formState.eventDate)}
-    onConfirm={(date) => {
-      setShowDatePicker(false);
-      handleInputChange('eventDate', date);
-    }}
-    onCancel={() => setShowDatePicker(false)}
-  />
-)}
-
+        <DatePicker
+          modal
+          open={isLoading}
+          date={formState.eventDate || new Date()}
+          onConfirm={(date) => {
+            setIsLoading(false);
+            handleInputChange('eventDate', date);
+          }}
+          onCancel={() => setIsLoading(false)}
+        />
       </View>
 
-      {/* Event Type */}
-      <InputField
-        label="Event Type"
-        placeholder="Select Type"
-        value={formState.eventType}
-        onChangeText={(text) => handleInputChange('eventType', text)}
-      />
+      <View>
+  <Text style={styles.label}>Event Type</Text>
+  <Picker
+    selectedValue={formState.eventType} // Use formState.eventType for selected value
+    onValueChange={(itemValue) => handleInputChange('eventType', itemValue)} // Update the state on change
+    style={styles.picker}
+  >
+    <Picker.Item label="Select Type" value="" />
+    <Picker.Item label="Conference" value="conference" />
+    <Picker.Item label="Workshop" value="workshop" />
+    <Picker.Item label="Seminar" value="seminar" />
+    <Picker.Item label="Webinar" value="webinar" />
+  </Picker>
+</View>
 
-      {/* Event Location */}
+
       <InputField
         label="Event Location"
         placeholder="Enter location"
@@ -124,7 +154,6 @@ const CreateEventScreen: React.FC = () => {
         onChangeText={(text) => handleInputChange('eventLocation', text)}
       />
 
-      {/* Google Maps URL */}
       <InputField
         label="Google Maps URL"
         placeholder="https://maps.google.com/xyz"
@@ -132,23 +161,18 @@ const CreateEventScreen: React.FC = () => {
         onChangeText={(text) => handleInputChange('googleMapsUrl', text)}
       />
 
-      {/* Event Media */}
       <View style={styles.mediaUploadContainer}>
         <Text style={styles.label}>Event Media</Text>
-        <TouchableOpacity style={styles.uploadButton} onPress={handleImageUpload}>
+        <TouchableOpacity style={styles.uploadButton} onPress={selectPhoto}>
           <Text style={styles.uploadButtonText}>Upload Image</Text>
         </TouchableOpacity>
         {formState.eventMedia && (
-          <Image
-            source={{ uri: formState.eventMedia }}
-            style={styles.previewImage}
-          />
+          <Image source={{ uri: formState.eventMedia }} style={styles.previewImage} />
         )}
       </View>
 
-      {/* Publish Button */}
       <TouchableOpacity style={styles.publishButton} onPress={handlePublish}>
-        <Text style={styles.publishButtonText}>Publish Event</Text>
+        <Text style={styles.publishButtonText}>{loading ? 'Publishing...' : 'Publish Event'}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -212,7 +236,7 @@ const styles = StyleSheet.create({
   },
   publishButton: {
     height: 52,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#6F3DE9',
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
@@ -222,6 +246,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFF',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#F9F9F9',
+    borderRadius: 8,
+    marginBottom: 16,
   },
 });
 

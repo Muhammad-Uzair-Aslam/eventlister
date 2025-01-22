@@ -1,42 +1,43 @@
+// src/hooks/useAuthForm.ts
 import { useState } from 'react';
+import { Alert } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { signInUser } from '../store/slices/AuthSlice';
-import { useAppDispatch } from '../store/hook'; // Adjust the path
-import { SignInFormData } from '../types/AuthTypes'; // Import types
+import { RootState, AppDispatch } from '../store/Store';
+import { UseAuthFormReturn } from '../types/authTypes';
 
-const useSignIn = () => {
-  const dispatch = useAppDispatch();
-  const [formData, setFormData] = useState<SignInFormData>({ email: '', password: '' });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'succeeded' | 'failed'>('idle');
-  const [error, setError] = useState<string | null>(null);
+export const useAuthForm = (navigation: any): UseAuthFormReturn => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch: AppDispatch = useDispatch();
+  const { status, error } = useSelector((state: RootState) => state.user);
 
   const handleSignIn = () => {
-    const { email, password } = formData;
     if (!email || !password) {
-      setError('Please fill all the fields.');
+      Alert.alert('Error', 'Please fill all the fields.');
       return;
     }
-
-    setStatus('loading');
-    setError(null);
 
     dispatch(signInUser({ email, password }))
       .unwrap()
       .then((user) => {
-        setStatus('succeeded');
+        Alert.alert('Success', `Welcome back, ${user.name}!`);
+        setEmail('');
+        setPassword('');
+        navigation.navigate('MainApp');
       })
       .catch((err) => {
-        setStatus('failed');
-        setError(err.message || 'Something went wrong');
+        Alert.alert('Error', err);
       });
   };
 
   return {
-    formData,
-    setFormData,
+    email,
+    password,
     status,
     error,
+    setEmail,
+    setPassword,
     handleSignIn,
   };
 };
-
-export default useSignIn;

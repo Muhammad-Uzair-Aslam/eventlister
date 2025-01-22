@@ -6,6 +6,7 @@ import EventCard from '../../components/onGoingEventCard/OnGoingEventCard';
 import RecentEventCard from '../../components/recenEventCard/RecentEventCard';
 import SearchBar from '../../components/searchBar/SearchBar';
 import SortingModal from '../../components/sortingModal/SortingModal';
+import TabNavigator from '../../navigation/TabNavigator';
 
 const HomeScreen: React.FC = () => {
   const [data, setData] = useState<string[]>([]); // Example data
@@ -71,6 +72,7 @@ const HomeScreen: React.FC = () => {
         date="11 Nov, 2022"
       />
       {/* <SortingModal isVisible={isVisible} onClose={() => setIsVisible(false)} /> */}
+      
     </ScrollView>
   );
 };

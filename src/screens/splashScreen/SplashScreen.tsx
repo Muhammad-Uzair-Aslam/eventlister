@@ -1,22 +1,15 @@
-import React, { useEffect } from 'react';
-import {  Text, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-
-type SplashScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Splash'>;
+import { SplashScreenNavigationProp } from '../../types/authTypes';
+import useSplashNavigation from '../../hooks/useSplashNavigation';
 
 const SplashScreen = () => {
   const navigation = useNavigation<SplashScreenNavigationProp>();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('ProfileSetting'); // Navigate to EventDetail after 3 seconds
-    }, 3000);
-
-    return () => clearTimeout(timer); // Clear timer on unmount
-  }, [navigation]);
+  // Call the custom hook
+  useSplashNavigation(navigation);
 
   return (
     <LinearGradient
@@ -42,11 +35,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#fff', // White text for better contrast on the gradient background
   },
-  text:{
-    fontSize:24,
-    fontWeight:'400',
-    color:'#fff',
-  }
+  text: {
+    fontSize: 24,
+    fontWeight: '400',
+    color: '#fff',
+  },
 });
 
 export default SplashScreen;

@@ -8,8 +8,12 @@ import {
   SafeAreaView,
   TextInput,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store'; // Adjust path
 import * as ImagePicker from 'react-native-image-picker';
 import CustomButton from '../../components/customButton/CustomButton';
+import { AppDispatch } from '../../store/store'; // Import the type
+import { signOutUser } from '../../store/slices/AuthSlice'; // Adjust path
 
 interface ProfileData {
   name: string;
@@ -18,6 +22,8 @@ interface ProfileData {
 }
 
 const ProfileSettingsScreen: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const { status, error } = useSelector((state: RootState) => state.user);
   const [profileData, setProfileData] = useState<ProfileData>({
     name: 'Muhammad Talha',
     email: 'talhabytheway@techcloset.com',
@@ -46,17 +52,19 @@ const ProfileSettingsScreen: React.FC = () => {
 
   const handleUpdateProfile = () => {
     console.log('Profile Update:', profileData);
-    // Add your profile update logic here
   };
 
   const handleResetPassword = () => {
     console.log('Reset Password Requested');
-    // Add your password reset logic here
   };
 
   const handleLogout = () => {
-    console.log('Logout Requested');
-    // Add your logout logic here
+    dispatch(signOutUser())
+    .then(() => {
+      
+    })
+    .catch((error) => {
+    });
   };
 
   return (
