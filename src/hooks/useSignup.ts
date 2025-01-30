@@ -1,48 +1,53 @@
 import { useState } from 'react';
+import { Alert } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/Store';
 import { signUpUser } from '../store/slices/AuthSlice';
-import { useAppDispatch } from '../store/hook'; // Import the dispatch hook
+import { useAppDispatch } from '../store/hook';
+import { SignUpFormData, UseSignUpFormReturn } from '../types/authTypes';
+import { NavigationProp } from '../types/authTypes'; 
 
-// Define the type for form data
-interface FormData {
-  name: string;
-  email: string;
-  password: string;
-}
+const initialFormState: SignUpFormData = {
+  name: '',
+  email: '',
+  password: '',
+};
 
-const useSignUp = () => {
+export const useSignUpForm = (navigation: NavigationProp): UseSignUpFormReturn => {
+  const [formData, setFormData] = useState<SignUpFormData>(initialFormState);
   const dispatch = useAppDispatch();
-  const [formData, setFormData] = useState<FormData>({ name: '', email: '', password: '' });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'succeeded' | 'failed'>('idle');
-  const [error, setError] = useState<string | null>(null);
+  const { status, error } = useSelector((state: RootState) => state.user);
+
+  const handleInputChange = (name: keyof SignUpFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSignUp = () => {
     const { name, email, password } = formData;
     if (!name || !email || !password) {
-      setError('Please fill all the fields.');
+      Alert.alert('Error', 'Please fill all the fields.');
       return;
     }
-
-    setStatus('loading');
-    setError(null);
 
     dispatch(signUpUser({ name, email, password }))
       .unwrap()
       .then(() => {
-        setStatus('succeeded');
+        setFormData(initialFormState);
+        navigation.navigate('MainApp');
       })
-      .catch((err) => {
-        setStatus('failed');
-        setError(err.message || 'Something went wrong');
+      .catch(err => {
+        Alert.alert('Error', err);
       });
   };
 
   return {
     formData,
-    setFormData,
     status,
     error,
     handleSignUp,
+    handleInputChange,
   };
 };
-
-export default useSignUp;

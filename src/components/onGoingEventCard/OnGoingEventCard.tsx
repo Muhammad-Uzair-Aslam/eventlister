@@ -3,11 +3,13 @@ import { View, Text, Image, StyleSheet } from "react-native";
 
 type CardProps = {
   category: string;
-  imageUrl: string; // Replace this with a valid image URL
+  imageUrl: string; 
   title: string;
-  author: string;
+  author?: string;
   price: string;
   date: string;
+  map?:string;
+  location?:string
 };
 
 const EventCard: React.FC<CardProps> = ({
@@ -17,18 +19,17 @@ const EventCard: React.FC<CardProps> = ({
   author,
   price,
   date,
+  map,
+  location
 }) => {
   return (
     <View style={styles.card}>
-      {/* Image Section */}
       <View style={styles.imageContainer}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
         <View style={styles.categoryContainer}>
           <Text style={styles.categoryText}>{category}</Text>
         </View>
       </View>
-
-      {/* Content Section */}
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.authorContainer}>
@@ -36,12 +37,11 @@ const EventCard: React.FC<CardProps> = ({
           <Text style={styles.authorText}>{author}</Text>
           <View style={styles.spacer}></View>
           <Text style={styles.price}>{price}</Text>
+          <Text>{location}</Text>
         </View>
 
-        {/* Divider */}
         <View style={styles.divider} />
 
-        {/* Date Section */}
         <Text style={styles.date}>{date}</Text>
       </View>
     </View>
@@ -52,11 +52,11 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: "#fff",
         borderRadius: 12,
-        shadowColor: "#B6C5CD", // Softer and subtle shadow color
-        shadowOffset: { width: 10, height: 15 }, // Deeper vertical shadow
-        shadowOpacity: 0.8, // High opacity for visible shadow
-        shadowRadius: 30, // Very large blur spread
-        elevation: 25, // Higher elevation for Android
+        shadowColor: "#B6C5CD", 
+        shadowOffset: { width: 10, height: 15 }, 
+        shadowOpacity: 0.8,
+        shadowRadius: 30, 
+        elevation: 25, 
         overflow: "hidden",
         marginBottom: 16,
       },
@@ -116,8 +116,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#6F3DE9",
     fontWeight: "500",
+    textAlign: "center",
+    width:50,
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 4,
     backgroundColor: "#EFF0F9",
     borderRadius: 40,
   },

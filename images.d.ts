@@ -4,17 +4,17 @@ declare module '*.png' {
   }
   
   declare module '*.jpg' {
-    const value: any;
+    const value: string;
     export = value;
   }
   
   declare module '*.jpeg' {
-    const value: any;
+    const value: string;
     export = value;
   }
   
   declare module '*.gif' {
-    const value: any;
+    const value: string;
     export = value;
   }
   
@@ -25,7 +25,7 @@ declare module '*.png' {
   }
   
   declare module '*.webp' {
-    const value: any;
+    const value: string;
     export = value;
   }
   

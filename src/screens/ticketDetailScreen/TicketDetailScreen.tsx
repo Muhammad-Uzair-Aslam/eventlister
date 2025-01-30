@@ -1,103 +1,106 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {AppDispatch} from '../../store/Store';
+import {fetchUserTickets} from '../../store/slices/EventSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../../store/Store';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {TicketDetailScreenProps} from '../../types/authTypes';
 
-interface TicketDetailProps {
-  ticketType: string;
-  eventName: string;
-  price: number;
-  ticketHolder: string;
-  date: string;
-  location: string;
-}
+const TicketDetailScreen: React.FC<TicketDetailScreenProps> = ({
+  navigation,
+}) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const userTickets = useSelector(
+    (state: RootState) => state.event.userTickets,
+  );
+  useEffect(() => {
+    dispatch(fetchUserTickets());
+  }, [dispatch]);
 
-const TicketDetailScreen: React.FC = () => {
-  const navigation = useNavigation();
-
-  const ticketData: TicketDetailProps = {
-    ticketType: 'Concert',
-    eventName: 'Radiohead Concert',
-    price: 152,
-    ticketHolder: 'Rizal Dwayne',
-    date: '22 Oct, 2022 at 8:00 Am',
-    location: 'Purwokerto, Indonesia',
-  };
+  const ticketData = userTickets.length > 0 ? userTickets[0] : null;
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          {/* <Image 
-            source={require('../assets/back-arrow.png')} 
-            style={styles.backIcon}
-          /> */}
+          style={styles.backButton}>
+          <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Detail Ticket</Text>
+        <Text></Text>
       </View>
-
-      {/* Ticket Card */}
-      <View style={styles.ticketCard}>
-        {/* Top Ticket Tag */}
-        <View style={styles.tagContainer}>
-          <Text style={styles.tagText}>{ticketData.ticketType}</Text>
-        </View>
-
-        {/* Event Image */}
-        <View style={styles.imageContainer}>
-          {/* Replace with actual event image */}
-          <View style={styles.imagePlaceholder} />
-        </View>
-
-        {/* Event Details */}
-        <View style={styles.detailsContainer}>
-          <View style={styles.eventHeader}>
-            <Text style={styles.eventName}>{ticketData.eventName}</Text>
-            <Text style={styles.eventPrice}>${ticketData.price}</Text>
+      {ticketData?<>{ticketData && (
+        <View style={styles.ticketCard}>
+          <View style={styles.tagContainer}>
+            <Text style={styles.tagText}>
+              {ticketData.eventType || 'Event Type'}
+            </Text>
           </View>
-         <View style={styles.eventRow}>
-         <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Ticket Holder</Text>
-              <Text style={styles.infoValue}>{ticketData.ticketHolder}</Text>
+
+          <View style={styles.imageContainer}>
+            <Image
+              source={{
+                uri: ticketData.eventMedia || 'https://via.placeholder.com/350',
+              }}
+              style={styles.imagePlaceholder}
+              resizeMode="cover"
+            />
+          </View>
+
+          <View style={styles.detailsContainer}>
+            <View style={styles.eventHeader}>
+              <Text style={styles.eventName}>
+                {ticketData.eventName || 'Event Name'}
+              </Text>
+              <Text style={styles.eventPrice}>
+                ${ticketData.ticketPrice||0}
+              </Text>
             </View>
-            <View style={styles.infoRow}>
-                
-              <Text style={styles.dateLabel}>Date</Text>
-              <Text style={styles.infoValue}>{ticketData.date}</Text>
+
+            <View style={styles.eventRow}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Ticket Holder</Text>
+                <Text style={styles.infoValue}>Muhammad Uzair</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.dateLabel}>Date</Text>
+                <Text style={styles.infoValue}>
+                  {ticketData.eventDate
+                    ? new Date(ticketData.eventDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : 'Date Not Specified'} at 08:00 Am
+                </Text>
+              </View>
             </View>
-         </View>
-          {/* Ticket Info */}
-          <View style={styles.infoSection}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Location</Text>
-              <Text style={styles.infoValue}>{ticketData.location}</Text>
+
+            <View style={styles.infoSection}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Location</Text>
+                <Text style={styles.infoValue}>
+                  {ticketData.eventLocation || 'Location Not Specified'}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-
-        {/* Ticket Cutout Design */}
-        <View style={styles.cutoutLeft} />
-        <View style={styles.cutoutRight} />
-
-        {/* Barcode Section */}
-        <View style={styles.barcodeContainer}>
+          <View style={styles.cutoutLeft} />
+          <View style={styles.cutoutRight} />
+          <View style={styles.barcodeContainer}>
             <View style={styles.barcodeBox}>
-                <Text></Text>
+              <Text></Text>
             </View>
-          <Text style={styles.barcodeText}>Scan the barcode</Text>
+            <Text style={styles.barcodeText}>Scan the barcode</Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      )}</>:<Text style={{color:'white',textAlign:'center',fontSize:20 ,marginTop:30}}>No Ticket Purchased</Text>}
+    </ScrollView>
   );
 };
 
@@ -108,18 +111,13 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    marginTop:30
+    paddingHorizontal: 16,
+    marginTop: 30,
   },
   backButton: {
-    padding: 8,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    tintColor: 'white',
+    padding: 1,
   },
   headerTitle: {
     color: 'white',
@@ -129,10 +127,10 @@ const styles = StyleSheet.create({
   },
   ticketCard: {
     backgroundColor: 'white',
-    flex:1,
+    flex: 1,
     borderRadius: 16,
     margin: 16,
-    marginTop:35,
+    marginTop: 35,
     overflow: 'hidden',
   },
   tagContainer: {
@@ -152,14 +150,13 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 200,
     backgroundColor: '#E5E5E5',
-    margin:8,
-    borderRadius:16
-    
+    margin: 8,
+    borderRadius: 16,
   },
   imagePlaceholder: {
     flex: 1,
     backgroundColor: '#E5E5E5',
-    borderRadius:16,
+    borderRadius: 16,
   },
   detailsContainer: {
     padding: 16,
@@ -170,12 +167,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  eventRow:{
+  eventRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingRight:1,
-    
-    // width:'95%',
+    paddingRight: 1,
     marginBottom: 16,
   },
   eventName: {
@@ -186,18 +181,18 @@ const styles = StyleSheet.create({
   eventPrice: {
     fontSize: 14,
     fontWeight: '500',
-    borderRadius:20,
+    borderRadius: 20,
+    width:50,
+    textAlign:'center',
     color: '#6C63FF',
-    backgroundColor:'#EFF0F9',
-    paddingHorizontal:8,
-    paddingVertical:4
+    backgroundColor: '#EFF0F9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   infoSection: {
     gap: 12,
   },
-  infoRow: {
-    // marginBottom: 8,
-  },
+  infoRow: {},
   infoLabel: {
     fontSize: 12,
     color: '#666',
@@ -207,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     marginBottom: 4,
-    alignSelf:'flex-end'
+    alignSelf: 'flex-end',
   },
   infoValue: {
     fontSize: 14,
@@ -221,8 +216,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor:'#171B2E',
-    
+    backgroundColor: '#171B2E',
   },
   cutoutRight: {
     position: 'absolute',
@@ -237,22 +231,21 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E5E5E5',
     padding: 16,
-    marginTop:15,
-    width:'90%',
-    margin:'auto',
+    marginTop: 15,
+    width: '90%',
+    margin: 'auto',
     alignItems: 'center',
   },
   barcodeText: {
     fontSize: 14,
     color: '#666',
   },
-  barcodeBox:{
-    backgroundColor:'#D9D9D9',
-    margin:10,
-    height:60,
-    width:'100%'
-    
-  }
+  barcodeBox: {
+    backgroundColor: '#D9D9D9',
+    margin: 10,
+    height: 60,
+    width: '100%',
+  },
 });
 
 export default TicketDetailScreen;

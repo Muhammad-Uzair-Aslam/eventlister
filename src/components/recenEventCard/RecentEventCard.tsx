@@ -1,12 +1,17 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet ,TouchableOpacity} from "react-native";
+
+
 
 type CardProps = {
   category: string;
-  imageUrl: string; // Replace this with a valid image URL
+  imageUrl: string; 
   title: string;
   price: string;
   date: string;
+  map?:string;
+  location?:string | 'nofound'
+  onPress: () => void; 
 };
 
 const RecentEventCard: React.FC<CardProps> = ({
@@ -15,8 +20,12 @@ const RecentEventCard: React.FC<CardProps> = ({
   title,
   price,
   date,
+  map,
+  location,
+  onPress
 }) => {
   return (
+    <TouchableOpacity  onPress={onPress}>
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
@@ -30,9 +39,12 @@ const RecentEventCard: React.FC<CardProps> = ({
         <Text style={styles.title}>{title}</Text>
         <View style={styles.footer}>
           <Text style={styles.date}>{date}</Text>
+          <Text>{location}</Text>
         </View>
       </View>
     </View>
+    </TouchableOpacity>
+
   );
 };
 
@@ -42,17 +54,17 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       backgroundColor: "#fff",
       borderRadius: 12,
-      shadowColor: "#B6C5CD", // Custom shadow color
-      shadowOffset: { width: 10, height: 15 }, // Deeper vertical shadow
-      shadowOpacity: 0.8, // High opacity for visible shadow
-      shadowRadius: 30, // Very large blur spread
-      elevation: 25, // Higher elevation for Android
+      shadowColor: "#B6C5CD", 
+      shadowOffset: { width: 10, height: 15 }, 
+      shadowOpacity: 0.8, 
+      shadowRadius: 30,
+      elevation: 25, 
       padding: 8,
       overflow: "hidden",
     },
     heading: {
       flexDirection: "row",
-      justifyContent: "space-between", // Changed from space-evenly to space-between
+      justifyContent: "space-between", 
       alignItems: "center",
       width:'80%'
       
@@ -61,7 +73,7 @@ const styles = StyleSheet.create({
       width: 88,
       height: 88,
       borderRadius: 12,
-      backgroundColor: "#D9D9D9", // Placeholder color
+      backgroundColor: "#D9D9D9", 
       overflow: "hidden",
       marginRight: 12,
     },
@@ -91,13 +103,14 @@ const styles = StyleSheet.create({
       color: "#999",
     },
     price: {
+      width:50,
       fontSize: 12,
       color: "#6F3DE9",
       fontWeight: "500",
-      paddingHorizontal: 10,
-      paddingVertical: 6,
+      textAlign:'center',
+      paddingVertical: 4,
       backgroundColor: "#EFF0F9",
-      borderRadius: 40, // Light purple for the price
+      borderRadius: 40, 
     },
   });
   

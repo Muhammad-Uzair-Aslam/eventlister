@@ -1,6 +1,6 @@
-import AlertIcon from "./alert.svg"
+import GoogleImage from "../images/google.png"
 
 export {
-    AlertIcon
+    GoogleImage
 }
 

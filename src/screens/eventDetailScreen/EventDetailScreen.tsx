@@ -7,91 +7,84 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  Image,
 } from 'react-native';
-import { useNavigation, RouteProp } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {EventDetailsScreenProps} from '../../types/authTypes';
+import {useEventData} from '../../hooks/useEventData';
+import {useTicketPurchase} from '../../hooks/useTicketPurchase';
+import {useMapNavigation} from '../../hooks/useMapNavigation';
+import {useEventNavigation} from '../../hooks/useEventNavigation';
 
-// Define navigation types
-interface EventDetailProps {
-  title: string;
-  price: number;
-  participants: number;
-  date: string;
-  description: string;
-  organizer: {
-    name: string;
-    avatar?: string;
-  };
-}
-
-type AuthStackParamList = {
-  EventDetail: { event: EventDetailProps };
-};
-
-type EventDetailScreenRouteProp = RouteProp<AuthStackParamList, 'EventDetail'>;
-
-type EventDetailScreenProps = {
-  route: EventDetailScreenRouteProp;
-};
-
-const EventDetailScreen: React.FC<EventDetailScreenProps> = ({route}) => {
-  const { event } = route.params; // Extract 'event' from route.params
-  const navigation = useNavigation();
+const EventDetailScreen: React.FC<EventDetailsScreenProps> = ({route}) => {
+  const {event} = route.params;
+  const {eventData} = useEventData(event);
+  const {handleBuyTicket} = useTicketPurchase();
+  const {openMap} = useMapNavigation(eventData.mapUrl);
+  const {goBack} = useEventNavigation();
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
-      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()} 
-          style={styles.backButton}
-        >
-          {/* Add back icon if needed */}
+        <TouchableOpacity onPress={goBack} style={styles.backButton}>
+          <Icon name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{event.title}</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          Event Detail
+        </Text>
+        <Text></Text>
       </View>
 
       <ScrollView style={styles.scrollView}>
-        {/* Event Image */}
         <View style={styles.imageContainer}>
-          <View style={styles.imagePlaceholder} />
+          <Image
+            source={{uri: eventData.image}}
+            style={styles.image}
+            resizeMode="cover"
+          />
         </View>
-
-        {/* Event Info */}
         <View style={styles.eventInfo}>
           <View style={styles.titleRow}>
-            <Text style={styles.title}>{event.participants}</Text>
-            <Text style={styles.price}>${event.price}</Text>
+            <Text style={styles.title}>{eventData.title}</Text>
+            <Text style={styles.price}>
+              {eventData.price === 0 ? 'Free' : `$${eventData.price}`}
+            </Text>
           </View>
 
           <View style={styles.participantsRow}>
-            <Text style={styles.participants}>{event.participants}</Text>
-            <Text style={styles.date}>• {event.date}</Text>
+            <Text style={styles.participants}><Text style={{fontWeight:600,color:'black'}}>182 </Text>Participant</Text>
+            <Text style={styles.date}>•  {eventData.date}</Text>
           </View>
-
-          {/* About Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>About Event</Text>
             <Text style={styles.description} numberOfLines={3}>
-              {event.description}            
-              </Text>
+              Join us at {eventData.title} for fun, excitement, and
+              unforgettable memories. Don't miss out – Grab your tickets now!
+            </Text>
             <TouchableOpacity>
               <Text style={styles.readMore}>Read More</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Organizer */}
           <View style={styles.organizerSection}>
             <View style={styles.organizerAvatar} />
-            <Text style={styles.organizerName}>jutt g</Text>
+            <Text style={styles.organizerName}>Jennifer Dane</Text>
+          </View>
+          <View style={styles.container}>
+            <Text style={styles.sectionTitle}>Maps</Text>
+            <View style={styles.googleMapContainer}>
+              <TouchableOpacity style={styles.googleMapButton} onPress={openMap}>
+                <Icon name="navigate-outline" size={18} color="#fff" />
+                <Text style={styles.buttonText}>Direct Map</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
-
-      {/* Buy Ticket Button */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.buyButton}>
+        <TouchableOpacity
+          style={styles.buyButton}
+          onPress={() => handleBuyTicket(event)}>
           <Text style={styles.buyButtonText}>Buy Ticket</Text>
         </TouchableOpacity>
       </View>
@@ -107,36 +100,47 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
   backButton: {
-    padding: 8,
+    padding: 1,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginLeft: 12,
   },
   scrollView: {
     flex: 1,
   },
   imageContainer: {
-    width: '100%',
+    marginTop: 10,
+    width: '92%',
+    marginHorizontal: '4%',
     height: 200,
     backgroundColor: '#F3F4F6',
     borderRadius: 16,
     overflow: 'hidden',
   },
-  imagePlaceholder: {
+  image: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#E5E7EB',
-    borderRadius: 16,
   },
   eventInfo: {
     padding: 16,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  googleMapContainer: {
+    height: 120,
+    backgroundColor: '#D1D5DB',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   titleRow: {
     flexDirection: 'row',
@@ -145,14 +149,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  price: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#6366F1',
+    color: '#171B2E',
+  },
+  price: {
+    backgroundColor: '#EFF0F9',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#6F3DE9',
   },
   participantsRow: {
     flexDirection: 'row',
@@ -204,13 +212,26 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#1F2937',
   },
+  googleMapButton: {
+    flexDirection: 'row',
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  mapButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   footer: {
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
   },
   buyButton: {
-    backgroundColor: '#6366F1',
+    backgroundColor: '#6F3DE9',
     height: 48,
     borderRadius: 24,
     justifyContent: 'center',

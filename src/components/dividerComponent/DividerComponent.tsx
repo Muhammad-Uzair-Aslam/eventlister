@@ -16,23 +16,23 @@ const DividerComponent: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginVertical: 20, // Add spacing if needed
+    marginVertical: 20, 
   },
   lineContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '90%', // Adjust width as needed
+    width: '90%', 
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#000000', // Line color
+    backgroundColor: '#000000', 
   },
   orText: {
-    marginHorizontal: 10, // Spacing around "or"
+    marginHorizontal: 10,
     fontSize: 14,
     fontWeight: '500',
-    color: '#000', // Text color
+    color: '#000',
   },
 });
 

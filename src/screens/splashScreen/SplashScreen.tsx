@@ -1,30 +1,19 @@
-import React, { useEffect } from 'react';
-import {  Text, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import {Text, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-
-type SplashScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Splash'>;
+import {SplashScreenNavigationProp} from '../../types/authTypes';
+import useSplashNavigation from '../../hooks/useSplashNavigation';
 
 const SplashScreen = () => {
   const navigation = useNavigation<SplashScreenNavigationProp>();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('ProfileSetting'); // Navigate to EventDetail after 3 seconds
-    }, 3000);
-
-    return () => clearTimeout(timer); // Clear timer on unmount
-  }, [navigation]);
-
+  useSplashNavigation(navigation);
   return (
     <LinearGradient
       colors={['#43116A', '#6F3DE9']}
-      start={{ x: 0.3, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.container}
-    >
+      start={{x: 0.3, y: 0}}
+      end={{x: 1, y: 1}}
+      style={styles.container}>
       <Text style={styles.headingText}>EventLister!</Text>
       <Text style={styles.text}>Nearby Event Mobile App!</Text>
     </LinearGradient>
@@ -40,13 +29,13 @@ const styles = StyleSheet.create({
   headingText: {
     fontSize: 52,
     fontWeight: '600',
-    color: '#fff', // White text for better contrast on the gradient background
+    color: '#fff',
   },
-  text:{
-    fontSize:24,
-    fontWeight:'400',
-    color:'#fff',
-  }
+  text: {
+    fontSize: 24,
+    fontWeight: '400',
+    color: '#fff',
+  },
 });
 
 export default SplashScreen;

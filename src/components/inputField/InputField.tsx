@@ -1,10 +1,9 @@
-// src/components/InputField.tsx
 import React from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 
 interface InputFieldProps {
   label: string;
-  placeholder: string;
+  placeholder?: string;
   value?: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
