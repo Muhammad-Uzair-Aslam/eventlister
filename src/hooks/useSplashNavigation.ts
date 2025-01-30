@@ -4,10 +4,10 @@ import { SplashScreenNavigationProp } from '../types/authTypes';
 const useSplashNavigation = (navigation: SplashScreenNavigationProp) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('SignUp'); // Navigate to SignUp screen
+      navigation.navigate('SignIn');
     }, 3000);
 
-    return () => clearTimeout(timer); // Clear timer on unmount
+    return () => clearTimeout(timer); 
   }, [navigation]);
 };
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-import GoogleImage from '../../assets/images/google.png'
+import { GoogleImage } from '../../assets/svgs';
 const ImageComponent: React.FC = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={GoogleImage} // Replace with your image URL
+        source={GoogleImage} 
         style={styles.image}
       />
     </View>
@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
     backgroundColor:'#92929230'
   },
   image: {
-    width: 23, // Adjust image width
-    height: 23, // Adjust image height
-    resizeMode: 'contain', // Adjust image resizing behavior
+    width: 23,
+    height: 23, 
+    resizeMode: 'contain', 
   },
 });
 

@@ -1,12 +1,12 @@
-// src/hooks/useAuthForm.ts
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { signInUser } from '../store/slices/AuthSlice';
 import { RootState, AppDispatch } from '../store/Store';
 import { UseAuthFormReturn } from '../types/authTypes';
+import { NavigationProp } from '../types/authTypes'; 
 
-export const useAuthForm = (navigation: any): UseAuthFormReturn => {
+export const useAuthForm = (navigation: NavigationProp): UseAuthFormReturn => { 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch: AppDispatch = useDispatch();
@@ -21,7 +21,6 @@ export const useAuthForm = (navigation: any): UseAuthFormReturn => {
     dispatch(signInUser({ email, password }))
       .unwrap()
       .then((user) => {
-        Alert.alert('Success', `Welcome back, ${user.name}!`);
         setEmail('');
         setPassword('');
         navigation.navigate('MainApp');

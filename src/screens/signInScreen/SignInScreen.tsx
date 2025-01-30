@@ -1,4 +1,3 @@
-// src/screens/signInScreen/SignInScreen.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import InputField from '../../components/inputField/InputField';
@@ -7,6 +6,8 @@ import DividerComponent from '../../components/dividerComponent/DividerComponent
 import ImageComponent from '../../components/ImageComponent/ImageComponent';
 import { useAuthForm } from '../../hooks/useSignin';
 import { SignInScreenProps } from '../../types/authTypes';
+import useGoogleSignIn from '../../hooks/useGoogleSignin';
+import useGoogleSignInConfig from '../../hooks/useGoogleSignInConfig';
 
 const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
   const {
@@ -18,7 +19,8 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
     setPassword,
     handleSignIn
   } = useAuthForm(navigation);
-
+  useGoogleSignInConfig();
+  const { onGoogleButtonPress } = useGoogleSignIn();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
@@ -38,7 +40,7 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
       />
       <Text style={styles.linkText}>
         Don't have an account?{' '}
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp',{})}>
           <Text style={styles.touchable}>Sign Up Instead</Text>
         </TouchableOpacity>
       </Text>
@@ -46,7 +48,9 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
       {status === 'loading' && <ActivityIndicator size="large" color="#6F3DE9" />}
       {error && <Text style={styles.errorText}>{error}</Text>}
       <DividerComponent />
+            <TouchableOpacity onPress={onGoogleButtonPress}>
       <ImageComponent />
+      </TouchableOpacity>
     </View>
   );
 };

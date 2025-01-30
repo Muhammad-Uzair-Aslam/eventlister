@@ -1,26 +1,18 @@
-import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather'; // Make sure to install this package
+import React from 'react';
+import { View, TextInput, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
 interface SearchBarProps {
   placeholder?: string;
-  onSearch?: (query: string) => void;
+  value: string;
+  onChangeText: (text: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder = "Search...", onSearch }) => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const handleSearch = () => {
-    if (onSearch) {
-      onSearch(searchQuery);
-    }
-  };
-
+const SearchBar: React.FC<SearchBarProps> = ({ 
+  placeholder = "Search...", 
+  value,
+  onChangeText 
+}) => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -28,9 +20,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder = "Search...", onSear
         <TextInput
           style={styles.input}
           placeholder={placeholder}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
+          value={value}
+          onChangeText={onChangeText}
           placeholderTextColor="#9CA3AF"
           returnKeyType="search"
         />
@@ -41,7 +32,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder = "Search...", onSear
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical:15,
+    marginBottom: 15,
     width: '100%',
   },
   searchContainer: {
@@ -61,8 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#1F2937',
-    height: '100%',
-    padding: 0, // Remove default padding
+    padding: 0,
   },
 });
 

@@ -1,4 +1,3 @@
-// src/screens/signUpScreen/SignUpScreen.tsx
 import React from 'react';
 import {
   View,
@@ -11,17 +10,16 @@ import InputField from '../../components/inputField/InputField';
 import CustomButton from '../../components/customButton/CustomButton';
 import DividerComponent from '../../components/dividerComponent/DividerComponent';
 import ImageComponent from '../../components/ImageComponent/ImageComponent';
-import { useSignUpForm } from '../../hooks/useSignup';
-import { SignUpScreenProps } from '../../types/authTypes';
+import {useSignUpForm} from '../../hooks/useSignup';
+import {SignUpScreenProps} from '../../types/authTypes';
+import useGoogleSignIn from '../../hooks/useGoogleSignin';
+import useGoogleSignInConfig from '../../hooks/useGoogleSignInConfig';
 
-const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
-  const {
-    formData,
-    status,
-    error,
-    handleSignUp,
-    handleInputChange,
-  } = useSignUpForm(navigation);
+const SignUpScreen: React.FC<SignUpScreenProps> = ({navigation}) => {
+  const {formData, status, error, handleSignUp, handleInputChange} =
+    useSignUpForm(navigation);
+  useGoogleSignInConfig();
+  const {onGoogleButtonPress} = useGoogleSignIn();
 
   return (
     <View style={styles.container}>
@@ -30,22 +28,23 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
         label="Name"
         placeholder="Enter your name"
         value={formData.name}
-        onChangeText={(text) => handleInputChange('name', text)}
+        onChangeText={text => handleInputChange('name', text)}
       />
       <InputField
         label="Email"
         placeholder="Enter your email"
         value={formData.email}
-        onChangeText={(text) => handleInputChange('email', text)}
+        onChangeText={text => handleInputChange('email', text)}
         keyboardType="email-address"
       />
       <InputField
         label="Password"
         placeholder="Password"
         value={formData.password}
-        onChangeText={(text) => handleInputChange('password', text)}
+        onChangeText={text => handleInputChange('password', text)}
         secureTextEntry
       />
+
       <CustomButton
         title="Sign Up"
         onPress={handleSignUp}
@@ -55,6 +54,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
         <ActivityIndicator size="large" color="#6F3DE9" />
       )}
       {error && <Text style={styles.errorText}>{error}</Text>}
+
       <Text style={styles.linkText}>
         Already have an account?{' '}
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
@@ -62,7 +62,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
         </TouchableOpacity>
       </Text>
       <DividerComponent />
-      <ImageComponent />
+      <TouchableOpacity onPress={onGoogleButtonPress}>
+        <ImageComponent />
+      </TouchableOpacity>
     </View>
   );
 };

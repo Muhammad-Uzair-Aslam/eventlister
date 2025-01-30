@@ -1,53 +1,39 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
+import {ActivityIndicator, View} from 'react-native';
 import SplashScreen from '../screens/splashScreen/SplashScreen';
 import SignIn from '../screens/signInScreen/SignInScreen';
 import SignUp from '../screens/signUpScreen/SignUpScreen';
-import RecoverPassword from '../screens/recoverPasswordScreen/RecoverPasswordScreen';
-import ResetPassword from '../screens/resetPasswordScreen/ResetPasswordScreen';
-
-// Updated AuthStackParamList with only auth-related screens
-export type AuthStackParamList = {
-  Splash: undefined;
-  SignIn: undefined;
-  SignUp: undefined;
-  RecoverPassword: undefined;
-  ResetPassword: undefined;
-};
+import MainNavigator from './MainNavigator';
+import useAuthentication from '../hooks/useLogout';
+import useLoading from '../hooks/useLoading';
+import {AuthStackParamList} from '../types/authTypes';
 
 const Stack = createStackNavigator<AuthStackParamList>();
 
 const AuthNavigator: React.FC = () => {
-  return (
-    <Stack.Navigator initialRouteName="Splash">
-      {/* Splash Screen */}
-      <Stack.Screen
-        name="Splash"
-        component={SplashScreen}
-        options={{ headerShown: false }}
-      />
+  const isAuthenticated = useAuthentication();
+  const isLoading = useLoading();
 
-      {/* Authentication Screens */}
-      <Stack.Screen
-        name="SignIn"
-        component={SignIn}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SignUp"
-        component={SignUp}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="RecoverPassword"
-        component={RecoverPassword}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ResetPassword"
-        component={ResetPassword}
-        options={{ title: 'Reset Password' }}
-      />
+  if (isLoading) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#6F3DE9" />
+      </View>
+    );
+  }
+
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      {isAuthenticated ? (
+        <Stack.Screen name="MainApp" component={MainNavigator} />
+      ) : (
+        <>
+          <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="SignIn" component={SignIn} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+        </>
+      )}
     </Stack.Navigator>
   );
 };

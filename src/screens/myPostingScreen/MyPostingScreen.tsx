@@ -1,56 +1,62 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchEvents } from '../../store/slices/EventSlice';
-import { AppDispatch, RootState } from '../../store/Store';
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import SearchBar from '../../components/searchBar/SearchBar';
 import RecentEventCard from '../../components/recenEventCard/RecentEventCard';
+import {
+  useEventsFetching,
+  useEventSearch,
+  useEventNavigation,
+} from '../../hooks/usePostingHooks';
 
 const MyPostingScreen = () => {
-  // const dispatch = useDispatch();
-  const dispatch = useDispatch<AppDispatch>();
-
-  const { events, loading, error } = useSelector((state: RootState) => state.event);
-
-  // Fetch events on component mount
-  useEffect(() => {
-    dispatch(fetchEvents());
-  }, [dispatch]);
-
-  // Handle errors
-  useEffect(() => {
-    if (error) {
-      Alert.alert('Error', error);
-    }
-  }, [error]);
+  const {events, loading, error} = useEventsFetching();
+  const {searchTerm, filteredEvents, handleSearch} = useEventSearch(events);
+  const {handleCardPress} = useEventNavigation();
 
   return (
     <ScrollView>
       <Text style={styles.heading}>My Event Posting</Text>
       <View style={styles.eventPosting}>
-        <SearchBar />
+        <SearchBar
+          placeholder="Search..."
+          value={searchTerm}
+          onChangeText={handleSearch}
+        />
         {loading ? (
           <ActivityIndicator size="large" color="#6F3DE9" />
-        ) : events.length > 0 ? (
-          events.map((event) => (
+        ) : filteredEvents?.length > 0 ? (
+          filteredEvents?.map((event,index )=> (
             <RecentEventCard
-              key={event.id} // Ensure each event has a unique ID
-              category={event.eventType}
-              imageUrl={event.eventMedia || 'https://via.placeholder.com/150'} // Default image if none exists
-              title={event.eventName}
-              price={event.ticketPrice ? `$${event.ticketPrice}` : 'Free'}
-              date={event.eventDate ? new Date(event.eventDate).toLocaleDateString() : 'No Date'}
+              key={index}
+              category={event?.eventType}
+              imageUrl={event?.eventMedia || 'https://via.placeholder.com/150'}
+              title={event?.eventName}
+              price={event?.ticketPrice ? `$${event?.ticketPrice}` : 'Free'}
+              date={
+                event?.eventDate
+                  ? new Date(event?.eventDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                  : 'No Date'
+              }
+              onPress={() => handleCardPress(event)}
             />
           ))
         ) : (
-          <Text style={styles.noEventsText}>No events to display</Text>
+          <Text style={styles.noEventsText}>
+            {searchTerm
+              ? 'No events found matching your search'
+              : 'No events to display'}
+          </Text>
         )}
       </View>
     </ScrollView>
   );
 };
-
-export default MyPostingScreen;
 
 const styles = StyleSheet.create({
   heading: {
@@ -59,7 +65,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   eventPosting: {
-    padding: 20,
+    paddingHorizontal: 20,
   },
   noEventsText: {
     textAlign: 'center',
@@ -68,3 +74,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default MyPostingScreen;

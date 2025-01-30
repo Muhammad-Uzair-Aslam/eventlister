@@ -19,32 +19,31 @@ interface FilterBottomSheetProps {
 }
 
 const SortingModal: React.FC<FilterBottomSheetProps> = ({ isVisible, onClose }) => {
-  const translateY = useSharedValue(1000); // Start offscreen
-  const context = useSharedValue({ y: 0 }); // Track pan gesture
+  const translateY = useSharedValue(1000); 
+  const context = useSharedValue({ y: 0 }); 
 
-  // Update translateY value based on modal visibility
   useEffect(() => {
     if (isVisible) {
-      translateY.value = withSpring(0, SPRING_CONFIG); // Animate in
+      translateY.value = withSpring(0, SPRING_CONFIG);
     } else {
-      translateY.value = withSpring(1000, SPRING_CONFIG); // Animate out
+      translateY.value = withSpring(1000, SPRING_CONFIG); 
     }
   }, [isVisible]);
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      context.value = { y: translateY.value }; // Store current position
+      context.value = { y: translateY.value };
     })
     .onUpdate((event) => {
-      translateY.value = event.translationY + context.value.y; // Update position
-      translateY.value = Math.max(translateY.value, 0); // Prevent dragging above top
+      translateY.value = event.translationY + context.value.y; 
+      translateY.value = Math.max(translateY.value, 0); 
     })
     .onEnd(() => {
       if (translateY.value > 200) {
-        translateY.value = withSpring(1000, SPRING_CONFIG); // Close modal if dragged too far
+        translateY.value = withSpring(1000, SPRING_CONFIG); 
         onClose();
       } else {
-        translateY.value = withSpring(0, SPRING_CONFIG); // Keep modal open
+        translateY.value = withSpring(0, SPRING_CONFIG); 
       }
     });
 
@@ -55,9 +54,7 @@ const SortingModal: React.FC<FilterBottomSheetProps> = ({ isVisible, onClose }) 
   });
 
   const [priceRange, setPriceRange] = React.useState<[number, number]>([250, 1000]);
-  const [dateRange, setDateRange] = React.useState<string>('');
-  const [category, setCategory] = React.useState<string>('');
-
+  
   return (
     <GestureHandlerRootView>
       <GestureDetector gesture={gesture}>
@@ -66,7 +63,7 @@ const SortingModal: React.FC<FilterBottomSheetProps> = ({ isVisible, onClose }) 
 
           <View style={styles.header}>
             <Text style={styles.title}>Filters</Text>
-            <TouchableOpacity onPress={() => { /* Reset logic */ }}>
+            <TouchableOpacity onPress={() => {}}>
               <Text style={styles.resetText}>Reset</Text>
             </TouchableOpacity>
           </View>
@@ -78,13 +75,10 @@ const SortingModal: React.FC<FilterBottomSheetProps> = ({ isVisible, onClose }) 
               <Text>${priceRange[1]}</Text>
               <Text style={styles.maxPrice}>$5000</Text>
             </View>
-            {/* You can integrate a custom slider here */}
-
             <Text style={styles.sectionTitle}>Sort by Date</Text>
             <TouchableOpacity
               style={styles.input}
               onPress={() => {
-                // Handle date selection logic
               }}>
               <Text style={styles.inputText}>Select date range</Text>
             </TouchableOpacity>
@@ -93,7 +87,6 @@ const SortingModal: React.FC<FilterBottomSheetProps> = ({ isVisible, onClose }) 
             <TouchableOpacity
               style={styles.input}
               onPress={() => {
-                // Handle category selection logic
               }}>
               <Text style={styles.inputText}>Select category</Text>
             </TouchableOpacity>

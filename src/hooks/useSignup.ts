@@ -1,4 +1,3 @@
-// src/hooks/useSignUpForm.ts
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -6,6 +5,7 @@ import { RootState } from '../store/Store';
 import { signUpUser } from '../store/slices/AuthSlice';
 import { useAppDispatch } from '../store/hook';
 import { SignUpFormData, UseSignUpFormReturn } from '../types/authTypes';
+import { NavigationProp } from '../types/authTypes'; 
 
 const initialFormState: SignUpFormData = {
   name: '',
@@ -13,7 +13,7 @@ const initialFormState: SignUpFormData = {
   password: '',
 };
 
-export const useSignUpForm = (navigation: any): UseSignUpFormReturn => {
+export const useSignUpForm = (navigation: NavigationProp): UseSignUpFormReturn => {
   const [formData, setFormData] = useState<SignUpFormData>(initialFormState);
   const dispatch = useAppDispatch();
   const { status, error } = useSelector((state: RootState) => state.user);
@@ -35,7 +35,6 @@ export const useSignUpForm = (navigation: any): UseSignUpFormReturn => {
     dispatch(signUpUser({ name, email, password }))
       .unwrap()
       .then(() => {
-        Alert.alert('Success', 'User account created and saved to database!');
         setFormData(initialFormState);
         navigation.navigate('MainApp');
       })
